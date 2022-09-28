@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <script src="https://code.jquery.com/jquery-3.3.1.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <script src="https://unpkg.com/gijgo@1.9.13/js/gijgo.min.js" type="text/javascript"></script>
+    <link href="https://unpkg.com/gijgo@1.9.13/css/gijgo.min.css" rel="stylesheet" type="text/css" />
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/all.css" integrity="sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ" crossorigin="anonymous">
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;700&display=swap');
+      body {
+        font-family: 'IBM Plex Sans', sans-serif;
+        font-weight: 500;
+      }
+      h1 {
+        border: 2px solid #dfdfdf;
+      }
+      h2 {
+        font-weight: 700;
+      }
+      h4 {
+        margin-bottom: 0px;
+      }
+      label {
+        font-weight: 400;
+      }
+      textarea {
+        resize: vertical;
+        max-height: 300px;
+        min-height: 200px;
+      }
+      .templates-header {
+        font-size: 50px;
+        padding: 50px;
+      }
+      .navbar {
+        background-color: #fff;
+        margin: 20px
+      }
+      .navbar-nav li a:hover {
+        font-weight: bolder;
+      }
+      .btn-primary {
+        background-color: #41b0fa;
+        border: 0;
+        font-weight: 500;
+        padding-left: 20px;
+        padding-right: 20px;
+      }
+      .btn-danger {
+        background-color: #6c757d;
+        color: #fff;
+        border: 0;
+        font-size: 15px;
+        padding-top: 0px;
+        padding-bottom: 0px;
+        padding-left: 5px;
+        padding-right: 5px;
+        margin-left: -15px;
+        margin-bottom: 2px;
+      }
+      .account {
+        font-size: 15px;
+      }
+      .fieldLabel {
+        margin-bottom: 0px
+      }
+      .rowTitle {
+        margin-bottom: 5px;
+      }
+      ul {
+        list-style-type: none;
+      }
+      input[type="date"]::-webkit-inner-spin-button {
+          opacity: 0
+      }
+
+      input[type="date"]::-webkit-calendar-picker-indicator {
+          background: url(https://cdn3.iconfinder.com/data/icons/linecons-free-vector-icons-pack/32/calendar-16.png) center/80% no-repeat;
+          color: rgba(0, 0, 0, 0);
+          opacity: 0.5
+      }
+
+      input[type="date"]::-webkit-calendar-picker-indicator:hover {
+          background: url(https://cdn3.iconfinder.com/data/icons/linecons-free-vector-icons-pack/32/calendar-16.png) center/80% no-repeat;
+          opacity: 0.8
+      }
+    </style>
+    <title></title>
+  </head>
+  <body>
+
+    <!-- Save Alert -->
+    <div class="alert alert-success" id="saveAlert" role="alert">
+      Document +
+    </div>
+
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-sm">
+      <a class="navbar-brand" style="color: #000" href="index.html">Itinerary.pw</a>
+      <ul class="navbar-nav mr-auto">
+        <li class="nav-item active">
+          <a class="nav-link" style="color: #000" href="editor.html">Create New</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" style="color: #000" href="templates.html">Templates</a>
+        </li>
+      </ul>
+      <ul class="navbar-nav ml-auto">
+        <li class="nav-item dropdown">
+          <button class="btn btn-primary account nav-link dropdown-toggle" id="accountButton" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Account</button>
+          <div class="dropdown-menu">
+            <a class="dropdown-item" data-toggle="modal" data-target="#loginModal" href="#">Login</a>
+            <a class="dropdown-item" onclick="signOut()" href="#">Sign Out</a>
+          </div>
+        </li>
+        <li class="nav-item active">
+          <a class="nav-link disabled" id="myItineraries" href="#">My Itineraries</a>
+        </li>
+
+      </ul>
+    </nav>
+
+   <!-- Login Modal -->
+   <div class="modal fade" id="loginModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+     <div class="modal-dialog modal-dialog-centered" role="document">
+       <div class="modal-content">
+         <div class="modal-header">
+           <h5 class="modal-title" id="loginModalTitle">Sign In</h5>
+           <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+             <span aria-hidden="true">&times;</span>
+           </button>
+         </div>
+         <div class="modal-body">
+           <form>
+             <div class="form-group">
+               <input type="text" class="form-control" id="usernameForm" placeholder="Username">
+             </div>
+             <div class="form-group">
+               <input type="password" class="form-control" id="passwordForm" placeholder="Password">
+             </div>
+             <div class="form-group">
+               <button type="submit" class="btn btn-google btn-secondary mb-2"><img src="https://img.icons8.com/color/16/000000/google-logo.png"> Sign in with Google</button>
+             </div>
+           </form>
+         </div>
+         <div class="modal-footer">
+           <button type="button" class="btn btn-primary" onclick="login()" data-dismiss="modal">Sign In</button>
+         </div>
+       </div>
+     </div>
+   </div>
+
+   <!-- Tool Bar -->
+    <div class="container-fluid" style="padding-left: 10%; padding-right: 10%;" >
+      <div class="row">
+          <h1 id="title" contenteditable="true">Untitled Cruise Itinerary</h1>
+      </div>
+
+      <!-- Toolbar  -->
+      <div class="row">
+        <button style="margin-right: 3px;" type="button" class="btn btn-primary" data-toggle="modal" data-target="#printModal" onclick="updateNamePrint()">Print</button>
+        <button style="margin-right: 3px;" type="button" class="btn btn-primary" data-toggle="modal" data-target="#shareModal" onclick="updateNameShare()">Share</button>
+        <button style="margin-right: 3px;" type="button" id="saveButton" class="btn btn-primary" >Save</button>
+        <div class="dropdown show">
+          <a class="btn btn-secondary dropdown-toggle" href="#" role="button" id="sectionDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            Add Section
+          </a>
+
+          <div class="dropdown-menu" aria-labelledby="sectionDropdown">
+            <a class="dropdown-item" onclick="addSection('calendar')" href="#">Calendar Section</a>
+            <a class="dropdown-item" onclick="addSection('budget')" href="#">Budget Section</a>
+            <a class="dropdown-item" onclick="addSection('travel')" href="#">Travel Section</a>
+            <a class="dropdown-item" onclick="addSection('activities')" href="#">Activities Section</a>
+            <a class="dropdown-item" onclick="addSection('packing')" href="#">Packing List Section</a>
+            <a class="dropdown-item" onclick="addSection('packing')" href="#">Upgrades Section</a>
+            <a class="dropdown-item" onclick="addSection('dining')" href="#">Dining Section</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Main Form -->
+      <form id="main" style="padding-top: 20px; margin-bottom: 20%;">
+
+        <div class="row" id="calendarLabel" style="display: none;">
+            <div class="col-md-auto">
+              <h5 contenteditable="true">Calendar Section</h5>
+            </div>
+          </div>
+        <div class="form-group row" id="calendarSection" style="display: none;">
+            <div class="form-group col-md-3">
+              <label for="datepicker">Start Date</label>
+              <input id="datepicker" class="form-control" type="date"/>
+            </div>
+            <div class="form-group col-md-3">
+              <label for="datepicker2">End Date</label>
+              <input id="datepicker2" class="form-control" type="date"/>
+            </div>
+          </div>
+
+        <div class="row" id="travelLabel" style="display: none;">
+            <div class="col-md-auto">
+              <h5 contenteditable="true">Travel Section</h5>
+            </div>
+          </div>
+        <div class="form-group row" id="travelSection" style="display: none;">
+            <div class="form-group col-md-3">
+              <label for="start">Starting Point</label>
+              <!--For the autofill all you have to do is set the list id in the input of the text -->
+              <input type="text" class="form-control" id="start" placeholder="Starting Point" list="locationList1">
+              <!-- make a datalist with the id of the list that you set in the input
+                You can add as many options as you want. Here I added common cities for washington and populous cities across the country.
+                You just repeat this for anywhere autofill is needed-->
+              <datalist id="locationList1">
+                <option>Seattle, WA</option>
+                <option>New York City, NY</option>
+                <option>Los Angeles, CA</option>
+                <option>Chicago, IL </option>
+                <option>San Francisco, CA</option>
+                <option>Boston, MA</option>
+                <option>Phoenix, AZ</option>
+                <option>Houston, TX</option>
+                <option>Philadelphia, PA</option>
+                <option>San Diego, CA</option>
+                <option>San Antonio, TX</option>
+                <option>Dallas, TX</option>
+                <option>San Jose, CA</option>
+                <option>Austin, TX</option>
+                <option>Washington, DC</option>
+                <option>Jacksonville, FL</option>
+                <option>Fort Worth, TX</option>
+                <option>Columbus, OH</option>
+                <option>Charlotte, NC</option>
+                <option>Indianapolis, IN</option>
+                <option>Denver, CO</option>
+                <option>Washington, DC </option>
+                <option>El Paso, TX</option>
+                <option>Las Vegas, NV</option>
+                <option>Portland, OR</option>
+                <option>Detroit, MI</option>
+                <option>Baltimore, MD</option>
+                <option>Louisville, KY</option>
+                <option>Ellensburg, WA</option>
+                <option>Yakima, WA</option>
+                <option>Wenatchee, WA</option>
+                <option>Sacramento, CA</option>
+              </datalist>
+
+
+            </div>
+
+
+            <div class="form-group col-md-3">
+              <label for="dest">Destination</label>
+              <!--For the autofill all you have to do is set the list id in the input of the text -->
+              <input type="text" class="form-control" id="dest" placeholder="Destination" list="locationList2">
+              <!-- make a datalist with the id of the list that you set in the input
+                You can add as many options as you want. Here I added common cities for washington and populous cities across the country.
+                You just repeat this for anywhere autofill is needed-->
+              <datalist id="locationList2">
+                <option>Seattle, WA</option>
+                <option>New York City, NY</option>
+                <option>Los Angeles, CA</option>
+                <option>Chicago, IL </option>
+                <option>San Francisco, CA</option>
+                <option>Boston, MA</option>
+                <option>Phoenix, AZ</option>
+                <option>Houston, TX</option>
+                <option>Philadelphia, PA</option>
+                <option>San Diego, CA</option>
+                <option>San Antonio, TX</option>
+                <option>Dallas, TX</option>
+                <option>San Jose, CA</option>
+                <option>Austin, TX</option>
+                <option>Washington, DC</option>
+                <option>Jacksonville, FL</option>
+                <option>Fort Worth, TX</option>
+                <option>Columbus, OH</option>
+                <option>Charlotte, NC</option>
+                <option>Indianapolis, IN</option>
+                <option>Denver, CO</option>
+                <option>Washington, DC </option>
+                <option>El Paso, TX</option>
+                <option>Las Vegas, NV</option>
+                <option>Portland, OR</option>
+                <option>Detroit, MI</option>
+                <option>Baltimore, MD</option>
+                <option>Louisville, KY</option>
+                <option>Ellensburg, WA</option>
+                <option>Yakima, WA</option>
+                <option>Wenatchee, WA</option>
+                <option>Sacramento, CA</option>
+              </datalist>
+            </div>
+            <div class="form-group col-md-2">
+              <label for="foodType">Transporation</label>
+              <select id="foodType" class="form-control">
+                <option selected>Flight</option>
+                <option>Own Car</option>
+                <option>Rental Car</option>
+                <option>Rideshare</option>
+                <option>Bus</option>
+                <option>Ferry</option>
+              </select>
+            </div>
+          </div>
+
+        <div class="row" id="activitiesLabel" style="display: none;">
+          <div class="col-md-auto">
+            <h5 contenteditable="true">Activities Section</h5>
+          </div>
+        </div>
+        <div class="form-group row" id="activitiesSection" style="display: none;">
+          <div class="form-group col-md-2">
+            <label for="Activity">Cruise Activity</label>
+            <input type="text" class="form-control" id="activity" placeholder="Activity">
+          </div>
+          <div class="form-group col-md-2">
+            <label for="activityType">Type</label>
+            <select id="activityType" class="form-control">
+              <option selected>Off-boat, on land</option>
+              <option>Off-boat, in water</option>
+              <option>Onboard</option>
+            </select>
+          </div>
+          <div class="form-group col-md-2">
+            <label for="datepicker3">Date</label>
+            <input id="datepicker3" class="form-control" type="date"/>
+          </div>
+          <div class="form-group col-auto">
+            <label for="dining">Time</label>
+            <input type="time" class="form-control" id="dining" placeholder="Time">
+          </div>
+          <div class="form-group col-md-3">
+            <label for="dining">Reservation Information</label>
+            <input type="text" class="form-control" id="dining" placeholder="Reservation Info">
+          </div>
+        </div>
+
+        <div class="row" id="packingLabel" style="display: none;">
+            <div class="col-md-auto">
+              <h5 contenteditable="true">Packing List</h5>
+            </div>
+          </div>
+        <div class="form-group row" id="packingSection" style="display: none;">
+            <div class="form-group col-md-6">
+              <textarea class="form-control" id="packingList"></textarea>
+            </div>
+          </div>
+
+        <div class="row" id="upgradesLabel" style="display: none;">
+            <div class="col-md-auto">
+              <h5 contenteditable="true">Upgrades</h5>
+            </div>
+          </div>
+        <div class="form-group row" id="upgradesSection" style="display: none;">
+            <div class="form-group col-md-6">
+              <textarea class="form-control" id="packingList"></textarea>
+            </div>
+        </div>
+
+        <div class="row" id="diningLabel" style="display: none;">
+            <div class="col-md-auto">
+              <h5 contenteditable="true">Dining Section</h5>
+            </div>
+          </div>
+        <div class="form-row" id="diningSection" style="display: none;">
+              <div class="form-group col-md-2">
+                <label for="dining">Restaurant</label>
+                <input type="text" class="form-control" id="dining" placeholder="Restaurant">
+              </div>
+              <div class="form-group col-md-2">
+                <label for="foodType">Type</label>
+                <select id="foodType" class="form-control">
+                  <option selected>Breakfast</option>
+                  <option>Lunch</option>
+                  <option>Dinner</option>
+                </select>
+              </div>
+              <div class="form-group col-md-2">
+                <label for="datepicker3">Date</label>
+                <input id="datepicker3" class="form-control" type="date"/>
+              </div>
+              <div class="form-group col-auto">
+                <label for="dining">Time</label>
+                <input type="time" class="form-control" id="dining" placeholder="Time">
+              </div>
+              <div class="form-group col-md-3">
+                <label for="dining">Reservation Information</label>
+                <input type="text" class="form-control" id="dining" placeholder="Reservation Info">
+              </div>
+            </div>
+
+        <div class="row" id="budgetLabel" style="display: none;">
+              <div class="col-md-auto">
+                <h5 contenteditable="true">Budget Section</h5>
+              </div>
+            </div>
+        <div class="form-group row" id="budgetSection" style="display: none;">
+              <div class="form-group col-md-3">
+                <label for="expense">Total Expense</label>
+                <input type="text" class="form-control" id="expense" placeholder="Total Expense">
+              </div>
+              <div class="form-group col-md-3">
+                <label for="left">Amount left to pay</label>
+                <input type="text" class="form-control" id="left" placeholder="Amount left to pay">
+              </div>
+            </div>
+      </form>
+
+    </div>
+
+    <!-- Print Modal -->
+    <div class="modal fade" id="printModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="printModalTitle">Modal title</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <form>
+              <div class="form-group">
+                <label for="exampleFormControlSelect1">Printer</label>
+                <select class="form-control" id="exampleFormControlSelect1">
+                  <option>HPPrinter_200847SP</option>
+                  <option>Wifi Printer</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="oreintation">Orientation</label>
+                <div id="oreintation">
+                  <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio1" value="option1">
+                    <label class="form-check-label" for="inlineRadio1">Auto</label>
+                  </div>
+                  <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio2" value="option2">
+                    <label class="form-check-label" for="inlineRadio2">Portrait</label>
+                  </div>
+                  <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio2" value="option2">
+                    <label class="form-check-label" for="inlineRadio2">Landscape</label>
+                  </div>
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="settings">Settings</label>
+                <div id="settings">
+                  <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" id="inlineCheckbox1" value="option1">
+                    <label class="form-check-label" for="inlineCheckbox1">Black and White</label>
+                  </div>
+                  <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" id="inlineCheckbox2" value="option2">
+                    <label class="form-check-label" for="inlineCheckbox2">Double Sided</label>
+                  </div>
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="formGroupExampleInput">Number of Copies</label>
+                <input type="text" class="form-control" id="formGroupExampleInput" placeholder="Number">
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-primary" data-dismiss="modal">Print</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Share Modal -->
+    <div class="modal fade" id="shareModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="shareModalTitle">Modal title</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <form>
+              <div class="form-group">
+                <label for="exampleFormControlInput1">Share with email</label>
+                <input type="email" class="form-control" id="exampleFormControlInput1" placeholder="name@example.com">
+              </div>
+              <div class="form-group">
+                <label for="exampleFormControlSelect1">Permissions</label>
+                <select class="form-control" id="exampleFormControlSelect1">
+                  <option>Read Only</option>
+                  <option>Can Edit</option>
+                </select>
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-primary" data-dismiss="modal">Share</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+    function updateNamePrint() {
+      var element = document.getElementById("printModalTitle");
+      element.innerHTML = "Print " + document.getElementById("title").innerHTML;
+    }
+    function updateNameShare() {
+      var element = document.getElementById("shareModalTitle");
+      element.innerHTML = "Share " + document.getElementById("title").innerHTML;
+    }
+    function createDiv(className) {
+      var div = document.createElement("div")
+      div.className = className;
+      return div;
+    }
+    function addSection(section) {
+      var label = document.getElementById(section + "Label");
+      var labelCopy = label.cloneNode(true);
+      labelCopy.style.display = "flex";
+
+      var section = document.getElementById(section + "Section");
+      var sectionCopy = section.cloneNode(true);
+      sectionCopy.style.display = "flex";
+
+      var divButton = createDiv("col-md-1");
+      var removeButton = document.createElement("button");
+      removeButton.className = "btn btn-danger";
+      removeButton.textContent = "Remove";
+      removeButton.onclick = function() {
+        listDiv.remove();
+      };
+      divButton.appendChild(removeButton);
+      labelCopy.appendChild(divButton);
+
+      var listDiv = createDiv("list-group-item");
+      var glyph =  document.createElement("span");
+      glyph.className = "handle fas fa-bars"
+
+      listDiv.appendChild(glyph);
+      listDiv.appendChild(labelCopy);
+      listDiv.appendChild(sectionCopy);
+      document.getElementById("main").appendChild(listDiv);
+    }
+
+    Sortable.create(main, {
+        animation: 150,
+        handle: '.handle',
+        ghostClass: 'blue-background-class'
+    });
+
+    addSection('calendar');
+    addSection('travel');
+    addSection('packing');
+    addSection('upgrades');
+
+    var username = localStorage.getItem('user');
+    if (username != null) {
+      document.getElementById("accountButton").innerHTML = localStorage.getItem('user');
+    }
+    function login() {
+      localStorage.setItem('user', document.getElementById("usernameForm").value);
+      document.getElementById("accountButton").innerHTML = localStorage.getItem('user');
+      document.getElementById("myItineraries").className = "nav-link";
+    }
+    function signOut() {
+      document.getElementById("myItineraries").className = "nav-link disabled";
+      window.location.reload();
+      localStorage.removeItem('user');
+    }
+
+    </script>
+
+    <script type="text/javascript">
+      $(document).ready(function() {
+      $("#saveAlert").hide();
+      $("#saveButton").click(function showAlert() {
+        var element = document.getElementById("saveAlert");
+        element.innerHTML = "Saved " + document.getElementById("title").innerHTML;
+        $("#saveAlert").fadeTo(2000, 500).slideUp(500, function() {
+          $("#saveAlert").slideUp(500);
+        });
+      });
+    });
+    </script>
+
+  </body>
+</html>

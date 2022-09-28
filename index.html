@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;700&display=swap');
+      body {
+        font-family: 'IBM Plex Sans', sans-serif;
+        font-weight: 500;
+      }
+      p {
+        font-weight: 400;
+      }
+      h1 {
+        font-size: 70px;
+      }
+      .navbar {
+        background-color: #fff;
+        margin: 20px
+      }
+      .navbar-nav li a:hover {
+        font-weight: bolder;
+      }
+      .jumbotron {
+        background-color: white;
+        margin-top: 200px;
+      }
+      .btn-primary {
+        background-color: #41b0fa;
+        border: 0;
+        font-size: 25px;
+        font-weight: 500;
+        padding-left: 20px;
+        padding-right: 20px;
+      }
+      .account {
+        font-size: 15px;
+      }
+      .btn-google {
+        background-color: #fff;
+        color: black;
+      }
+      footer {
+        position: absolute;
+         left: 0;
+         bottom: 0;
+         height: 100px;
+         width: 100%;
+         overflow: hidden;
+      }
+    </style>
+    <title></title>
+  </head>
+  <body>
+
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-sm">
+      <a class="navbar-brand" style="color: #000" href="index.html">Itinerary.pw</a>
+      <ul class="navbar-nav mr-auto">
+        <li class="nav-item active">
+          <a class="nav-link" style="color: #000" href="editor.html">Create New</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" style="color: #000" href="templates.html">Templates</a>
+        </li>
+      </ul>
+      <ul class="navbar-nav ml-auto">
+        <li class="nav-item dropdown">
+          <button class="btn btn-primary account nav-link dropdown-toggle" id="accountButton" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Account</button>
+          <div class="dropdown-menu">
+            <a class="dropdown-item" data-toggle="modal" data-target="#loginModal" href="#">Login</a>
+            <a class="dropdown-item" onclick="signOut()" href="#">Sign Out</a>
+          </div>
+        </li>
+        <li class="nav-item active">
+          <a class="nav-link disabled" id="myItineraries" href="#">My Itineraries</a>
+        </li>
+
+      </ul>
+    </nav>
+
+   <div class="jumbotron text-center">
+    <h1>Itinerary.pw</h1>
+    <p style="font-size: 19px;">Create beautiful and fully customizable itineraries from scratch, or use <br>
+      curated templates for any activity. Get started below</p>
+    <button type="button" class="btn btn-primary" onclick="window.location.href='templates.html';">Get Started</button>
+  </div>
+
+  <!-- Login Modal -->
+  <div class="modal fade" id="loginModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="loginModalTitle">Sign In</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <form>
+            <div class="form-group">
+              <input type="text" class="form-control" id="usernameForm" placeholder="Username">
+            </div>
+            <div class="form-group">
+              <input type="password" class="form-control" id="passwordForm" placeholder="Password">
+            </div>
+            <div class="form-group">
+              <button type="submit" class="btn btn-google btn-secondary mb-2"><img src="https://img.icons8.com/color/16/000000/google-logo.png"> Sign in with Google</button>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary" onclick="login()" data-dismiss="modal">Sign In</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer class="page-footer font-small blue pt-4">
+    <div class="footer-copyright text-center py-4">© 2021 Copyright:
+      <a href="http://itinerary.pw/index.html"> Itinerary.pw</a>
+      <p>*This website is a prototype. Do not input any sensitive information.</p>
+    </div>
+  </footer>
+<!-- Footer -->
+  </body>
+
+  <script>
+    var username = localStorage.getItem('user');
+    if (username != null) {
+      document.getElementById("accountButton").innerHTML = localStorage.getItem('user');
+    }
+    function login() {
+      localStorage.setItem('user', document.getElementById("usernameForm").value);
+      document.getElementById("accountButton").innerHTML = localStorage.getItem('user');
+    }
+    function signOut() {
+      window.location.reload();
+      localStorage.removeItem('user');
+    }
+  </script>
+
+</html>
